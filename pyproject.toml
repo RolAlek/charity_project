@@ -17,6 +17,9 @@ flake8 = "^7.1.0"
 isort = "^5.13.2"
 mypy = "^1.10.1"
 alembic = "^1.13.2"
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+aiosqlite = "^0.20.0"
 
 
 [build-system]
@@ -27,7 +30,6 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 extend-exclude = "alembic/*"
 line-length = 79
-skip-string-normalization = "true"
 
 [tool.flake8]
 extend-exclude = [
@@ -58,7 +60,7 @@ per-file-ignores = [
 [tool.isort]
 profile = "black"
 line_length = 79
-src_paths = "app"
+src_paths = "charity_project_app"
 extend_skip = ["alembic"]
 
 [tool.mypy]
@@ -69,3 +71,11 @@ disallow_untyped_decorators = true
 ignore_errors = false
 ignore_missing_imports = true
 implicit_reexport = false
+
+
+[tool.pytest.ini_options]
+pythonpath = [".", "charity_project_app"]
+asyncio_mode = "auto"
+norecursedirs = "env/*"
+addopts = "-vv -p no:cacheprovider --disable-warnings"
+testpaths = "tests/"
