@@ -1,6 +1,5 @@
 from typing import AsyncGenerator
 
-from charity_project_app.core.config import settings
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -13,12 +12,13 @@ from sqlalchemy.orm import (
     mapped_column,
 )
 
+from charity_project_app.core.config import settings
+
 
 class Base(DeclarativeBase):
     __abstract__ = True
 
     @declared_attr
-    @classmethod
     def __tablename__(cls):
         return f"{cls.__name__.lower()}s"
 
