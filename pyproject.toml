@@ -23,6 +23,7 @@ aiosqlite = "^0.20.0"
 pytest-freezegun = "^0.4.2"
 freezegun = "^1.5.1"
 setuptools = "^70.2.0"
+fastapi-users = {extras = ["sqlalchemy"], version = "^13.0.0"}
 
 
 [build-system]

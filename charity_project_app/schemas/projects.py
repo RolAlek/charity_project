@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import (
     BaseModel,
@@ -29,9 +28,9 @@ class ReadProject(CreateProject):
 
 class UpdateProject(CreateProject):
     model_config = ConfigDict(extra=Extra.forbid)
-    name: Optional[str] = Field(None, min_length=3, max_length=100)
-    description: Optional[str] = Field(None, min_length=1)
-    full_amount: Optional[PositiveInt] = Field(None)
+    name: str | None = Field(None, min_length=3, max_length=100)
+    description: str | None = Field(None, min_length=1)
+    full_amount: PositiveInt | None = None
 
     @classmethod
     @field_validator("name", "description", "full_amount")

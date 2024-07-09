@@ -6,6 +6,11 @@ class DatabaseSettings(BaseModel):
     url: PostgresDsn
 
 
+class UserSettings(BaseModel):
+    secret: str
+    lifetime: int = 3600
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -18,6 +23,7 @@ class Settings(BaseSettings):
 
     app_title: str = "Charity Project Application"
     db: DatabaseSettings
+    user: UserSettings
 
 
 settings = Settings()
