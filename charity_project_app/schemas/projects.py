@@ -1,12 +1,20 @@
 from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Extra,
+    Field,
+    PositiveInt,
+    field_validator,
+)
 
 
 class CreateProject(BaseModel):
     name: str = Field(..., min_length=3, max_length=100)
     description: str = Field(..., min_length=1)
-    full_amount: int = Field(..., gt=0)
+    full_amount: PositiveInt
 
 
 class ReadProject(CreateProject):
@@ -17,3 +25,17 @@ class ReadProject(CreateProject):
     fully_invested: bool
     created_date: datetime
     close_data: datetime | None = None
+
+
+class UpdateProject(CreateProject):
+    model_config = ConfigDict(extra=Extra.forbid)
+    name: Optional[str] = Field(None, min_length=3, max_length=100)
+    description: Optional[str] = Field(None, min_length=1)
+    full_amount: Optional[PositiveInt] = Field(None)
+
+    @classmethod
+    @field_validator("name", "description", "full_amount")
+    def columns_cant_be_null(cls, value):
+        if value is None:
+            raise ValueError("Column can not be null")
+        return value

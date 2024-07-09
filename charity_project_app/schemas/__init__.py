@@ -1,3 +1,3 @@
-__all__ = ["CreateProject", "ReadProject"]
+__all__ = ["CreateProject", "ReadProject", "UpdateProject"]
 
-from .projects import CreateProject, ReadProject
+from .projects import CreateProject, ReadProject, UpdateProject
