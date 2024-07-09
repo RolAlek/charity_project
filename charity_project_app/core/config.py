@@ -1,4 +1,4 @@
-from pydantic import BaseModel, PostgresDsn
+from pydantic import BaseModel, EmailStr, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -9,6 +9,8 @@ class DatabaseSettings(BaseModel):
 class UserSettings(BaseModel):
     secret: str
     lifetime: int = 3600
+    superuser_login: EmailStr | None = None
+    superuser_password: str | None = None
 
 
 class Settings(BaseSettings):
