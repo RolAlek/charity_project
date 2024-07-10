@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import AsyncGenerator
 
+from sqlalchemy import CheckConstraint
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -18,11 +20,22 @@ from charity_project_app.core.config import settings
 class Base(DeclarativeBase):
     __abstract__ = True
 
+    @classmethod
     @declared_attr
     def __tablename__(cls):
         return f"{cls.__name__.lower()}s"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+
+
+class CommonFields:
+    full_amount: Mapped[int] = mapped_column(
+        CheckConstraint("full_amount > 0")
+    )
+    created_date: Mapped[datetime] = mapped_column(default=datetime.now)
+    invested_amount: Mapped[int] = mapped_column(default=0)
+    fully_invested: Mapped[bool] = mapped_column(default=False)
+    close_date: Mapped[datetime] = mapped_column(nullable=True)
 
 
 class DBManager:
