@@ -37,3 +37,17 @@ async def charity_project_second(freezer):
             )
         )
         await session.commit()
+
+
+@pytest.fixture
+def correct_create_testing_data():
+    return {
+        "name": "Test name",
+        "description": "Test description",
+        "full_amount": 1000,
+    }
+
+
+@pytest.fixture
+def update_testing_data():
+    return {"description": "Test update description"}

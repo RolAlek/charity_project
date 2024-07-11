@@ -3,13 +3,13 @@ import pytest
 
 URL = "api/projects/"
 EXPECTED_KEYS = {
-    'name',
-    'description',
-    'full_amount',
-    'id',
-    'invested_amount',
-    'fully_invested',
-    'created_date',
+    "name",
+    "description",
+    "full_amount",
+    "id",
+    "invested_amount",
+    "fully_invested",
+    "created_date",
 }
 
 
@@ -18,8 +18,8 @@ EXPECTED_KEYS = {
     [None, "", "a" * 101],
     ids=["null", "empty", "too long"],
 )
-def test_create_project_with_invalid_name(invalid_name, test_client):
-    response = test_client.post(
+def test_create_project_with_invalid_name(superuser_client, invalid_name):
+    response = superuser_client.post(
         URL,
         json={
             "name": invalid_name,
@@ -37,8 +37,8 @@ def test_create_project_with_invalid_name(invalid_name, test_client):
     [None, ""],
     ids=["null", "empty"],
 )
-def test_create_project_with_non_description(non_desc, test_client):
-    response = test_client.post(
+def test_create_project_with_non_description(non_desc, superuser_client):
+    response = superuser_client.post(
         URL,
         json={
             "name": "Project test name",
@@ -59,8 +59,10 @@ def test_create_project_with_non_description(non_desc, test_client):
         {"id": 100},
     ],
 )
-def test_create_project_with_default_filling_fields(json_data, test_client):
-    response = test_client.post(
+def test_create_project_with_default_filling_fields(
+    json_data, superuser_client
+):
+    response = superuser_client.post(
         URL,
         json=json_data,
     )
@@ -75,8 +77,8 @@ def test_create_project_with_default_filling_fields(json_data, test_client):
     [None, "", 0, -1, "string"],
     ids=["None", "empty_string", "null", "negative", "string"],
 )
-def test_create_project_with_invalid_amount(invalid_amount, test_client):
-    response = test_client.post(
+def test_create_project_with_invalid_amount(invalid_amount, superuser_client):
+    response = superuser_client.post(
         URL,
         json={
             "name": "Project test name",
@@ -90,14 +92,10 @@ def test_create_project_with_invalid_amount(invalid_amount, test_client):
     )
 
 
-async def test_create_project(async_client):
+async def test_create_project(async_client, correct_create_testing_data):
     response = await async_client.post(
         URL,
-        json={
-            "name": "Test name",
-            "description": "Test description",
-            "full_amount": 1000,
-        },
+        json=correct_create_testing_data,
     )
     assert (
         response.status_code == 201
@@ -157,12 +155,17 @@ async def test_get_all_projects(async_client):
     "json_data",
     [
         {
-            "name": "Test name change", "description": "Test description change", "full_amount": 2000,
+            "name": "Test name change",
+            "description": "Test description change",
+            "full_amount": 2000,
         }
-    ]
+    ],
 )
-async def test_update_project_with_non_exist_id(async_client, json_data):
-    response = await async_client.patch(os.path.join(URL, "100"), json=json_data,)
+def test_update_project_with_non_exist_id(superuser_client, json_data):
+    response = superuser_client.patch(
+        os.path.join(URL, "100"),
+        json=json_data,
+    )
     assert response.status_code == 404, (
         "Запрос с попыткой обновления проекта с несуществующим id должен"
         " возвращать ошибку со статусом 404"
@@ -209,18 +212,23 @@ async def test_update_project_with_non_exist_id(async_client, json_data):
                 "invested_amount": 0,
             },
         ),
-    ]
+    ],
 )
-async def test_update_project(async_client, charity_project_first, json_data, expected_data,):
+def test_update_project(
+    superuser_client,
+    charity_project_first,
+    json_data,
+    expected_data,
+):
     url = os.path.join(URL, "1")
-    response = await async_client.patch(url, json=json_data)
-    assert response.status_code == 200, (
-        f"Коректный PATCH-запрос к {url} должен вернуть статус-код 200"
-    )
+    response = superuser_client.patch(url, json=json_data)
+    assert (
+        response.status_code == 200
+    ), f"Коректный PATCH-запрос к {url} должен вернуть статус-код 200"
     response_data = response.json()
     missing_keys = EXPECTED_KEYS - response_data.keys()
     assert not missing_keys, (
-        f'В ответе на PATCH-запрос к {url} не хвататет следующих ключей:'
+        f"В ответе на PATCH-запрос к {url} не хвататет следующих ключей:"
         f'`{"`, `".join(missing_keys)}`"'
     )
     response_data.pop("close_date", None)
@@ -243,9 +251,9 @@ async def test_update_project(async_client, charity_project_first, json_data, ex
         {"full_amount": -1},
     ],
 )
-def test_update_project_with_invalid_data(test_client, json_data):
+def test_update_project_with_invalid_data(superuser_client, json_data):
     url = os.path.join(URL, "1")
-    response = test_client.patch(url, json=json_data)
+    response = superuser_client.patch(url, json=json_data)
     assert response.status_code == 422, (
         f"Убедитесь что при попытке отправить PATCH-запрос к {url} с"
         "некоректыми данными: постые поля name, description, full_amount"
@@ -261,12 +269,14 @@ def test_update_project_with_invalid_data(test_client, json_data):
         {"invested_amount": 500},
         {"fully_invested": True},
         {"close_date": "2023-01-01T00:00:00"},
-        {"created_date": "2023-01-01T00:00:00"}
+        {"created_date": "2023-01-01T00:00:00"},
     ],
 )
-def test_update_project_with_default_filling_fields(test_client, json_data):
+def test_update_project_with_default_filling_fields(
+    superuser_client, json_data
+):
     url = os.path.join(URL, "1")
-    response = test_client.patch(url, json=json_data)
+    response = superuser_client.patch(url, json=json_data)
     assert response.status_code == 422, (
         f"Убедитесь что при попытке отправить PATCH-запрос к {url} с"
         " полями не предусмотренными спецификацией API для этого эндпоинта"
@@ -274,18 +284,20 @@ def test_update_project_with_default_filling_fields(test_client, json_data):
     )
 
 
-async def test_delete_project_with_non_exist_id(async_client, charity_project_first):
+def test_delete_project_with_non_exist_id(
+    superuser_client, charity_project_first
+):
     url = os.path.join(URL, "100")
-    response = await async_client.delete(url)
-    assert response.status_code == 404, (
-        f"DELETE-запрос к {url} должен возвращать статус-код 404"
-    )
+    response = superuser_client.delete(url)
+    assert (
+        response.status_code == 404
+    ), f"DELETE-запрос к {url} должен возвращать статус-код 404"
 
 
 @pytest.mark.usefixtures("charity_project_first", "charity_project_second")
-async def test_delete_project(async_client, charity_project_first):
+def test_delete_project(superuser_client, charity_project_first):
     url = os.path.join(URL, "1")
-    response = await async_client.delete(url)
-    assert response.status_code == 204, (
-        f"DELETE-запрос к {url} должен возвращать статус-код 204"
-    )
+    response = superuser_client.delete(url)
+    assert (
+        response.status_code == 204
+    ), f"DELETE-запрос к {url} должен возвращать статус-код 204"

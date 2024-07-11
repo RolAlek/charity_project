@@ -18,4 +18,3 @@ main_router.include_router(
     tags=["donations"],
 )
 main_router.include_router(users_router)
-

@@ -8,6 +8,7 @@ from charity_project_app.api.validators import (
     validate_unique_project_name,
 )
 from charity_project_app.core import db_manager
+from charity_project_app.core.users import current_superuser
 from charity_project_app.crud import project_crud
 from charity_project_app.schemas import (
     CreateProject,
@@ -23,6 +24,7 @@ router = APIRouter()
     status_code=HTTPStatus.CREATED,
     response_model=ReadProject,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def create_project(
     new_project: CreateProject,
@@ -59,6 +61,7 @@ async def get_project(
     "/{project_id}",
     response_model=ReadProject,
     response_model_exclude_none=True,
+    dependencies=[Depends(current_superuser)],
 )
 async def update_project(
     project_id: int,
@@ -75,7 +78,11 @@ async def update_project(
     )
 
 
-@router.delete("/{project_id}", status_code=HTTPStatus.NO_CONTENT)
+@router.delete(
+    "/{project_id}",
+    status_code=HTTPStatus.NO_CONTENT,
+    dependencies=[Depends(current_superuser)],
+)
 async def remove_project(
     project_id: int,
     session: AsyncSession = Depends(db_manager.get_session),
