@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 URL = "api/projects/"
@@ -92,8 +93,8 @@ def test_create_project_with_invalid_amount(invalid_amount, superuser_client):
     )
 
 
-async def test_create_project(async_client, correct_create_testing_data):
-    response = await async_client.post(
+def test_create_project(superuser_client, correct_create_testing_data):
+    response = superuser_client.post(
         URL,
         json=correct_create_testing_data,
     )
@@ -122,8 +123,8 @@ async def test_create_project(async_client, correct_create_testing_data):
 
 
 @pytest.mark.usefixtures("charity_project_first", "charity_project_second")
-async def test_get_all_projects(async_client):
-    response = await async_client.get(URL)
+def test_get_all_projects(superuser_client):
+    response = superuser_client.get(URL)
     assert (
         response.status_code == 200
     ), f"GET-запрос к {URL} должен вернуть код 200."

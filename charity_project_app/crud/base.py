@@ -9,8 +9,15 @@ class CRUDManager:
     def __init__(self, model):
         self.model = model
 
-    async def create(self, data, session: AsyncSession):
+    async def create(
+        self,
+        data,
+        session: AsyncSession,
+        user: User | None = None,
+    ):
         new_data = data.model_dump()
+        if user is not None:
+            new_data["user_id"] = user.id
         db_obj = self.model(**new_data)
         session.add(db_obj)
         await session.commit()

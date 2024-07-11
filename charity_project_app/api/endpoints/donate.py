@@ -14,12 +14,18 @@ from charity_project_app.schemas import (
 router = APIRouter()
 
 
-@router.post("/", response_model=ReadUserDonation)
+@router.post(
+    "/",
+    response_model=ReadUserDonation,
+    status_code=201,
+    response_model_exclude_none=True,
+)
 async def make_a_donation(
     donation: CreateDonation,
+    user: User = Depends(current_user),
     session: AsyncSession = Depends(db_manager.get_session),
 ):
-    return await donate_crud.create(donation, session)
+    return await donate_crud.create(donation, session, user=user)
 
 
 @router.get(
@@ -36,7 +42,7 @@ async def get_all_donations(
 
 @router.get(
     "/my",
-    response_model=[ReadUserDonation],
+    response_model=list[ReadUserDonation],
     dependencies=[Depends(current_user)],
 )
 async def get_my_donations(

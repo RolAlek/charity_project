@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy import insert
 from tests.conftest import TestingSessionLocal
 
-from charity_project_app.models import Project
+from charity_project_app.models import Donation, Project
 
 
 @pytest.fixture
@@ -51,3 +51,18 @@ def correct_create_testing_data():
 @pytest.fixture
 def update_testing_data():
     return {"description": "Test update description"}
+
+
+@pytest.fixture
+async def donation(freezer):
+    freezer.move_to("2023-01-01")
+    async with TestingSessionLocal() as session:
+        await session.execute(
+            insert(Donation).values(
+                id=1,
+                user_id=1,
+                full_amount=1000,
+                created_date=datetime.now(),
+            )
+        )
+        await session.commit()
