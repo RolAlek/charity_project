@@ -1,6 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from charity_project_app.models import User
+
 
 class CRUDManager:
 
@@ -15,8 +17,11 @@ class CRUDManager:
         await session.refresh(db_obj)
         return db_obj
 
-    async def get_all(self, session: AsyncSession):
-        objects = await session.scalars(select(self.model))
+    async def get_all(self, session: AsyncSession, user: User | None = None):
+        stmt = select(self.model)
+        if user is not None:
+            stmt = stmt.where(self.model.user_id == user.id)
+        objects = await session.scalars(stmt)
         return objects.all()
 
     async def get_by_id(self, obj_id: int, session: AsyncSession):

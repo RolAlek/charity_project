@@ -7,8 +7,9 @@ __all__ = [
     "UserUpdate",
     "CreateDonation",
     "ReadUserDonation",
+    "ReadSuperUserDonation",
 ]
 
-from .donate import CreateDonation, ReadUserDonation
+from .donate import CreateDonation, ReadSuperUserDonation, ReadUserDonation
 from .projects import CreateProject, ReadProject, UpdateProject
 from .users import UserCreate, UserRead, UserUpdate

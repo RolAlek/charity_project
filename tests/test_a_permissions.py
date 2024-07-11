@@ -4,11 +4,13 @@ from test_project import URL
 
 
 def test_create_project_non_superuser(
-        test_client, correct_create_testing_data
+    test_client,
+    correct_create_testing_data,
 ):
     response = test_client.post(URL, json=correct_create_testing_data)
     assert response.status_code == 401, (
-        f"POST-запрос к {URL} анонимного пользователя должен вернуть статус-код 401."
+        f"POST-запрос к {URL} анонимного пользователя должен вернуть"
+        " статус-код 401."
     )
 
 
@@ -16,7 +18,8 @@ def test_delete_project_non_superuser(test_client):
     url = os.path.join(URL, "1")
     response = test_client.delete(url)
     assert response.status_code == 401, (
-        f"DELETE-запрос к {url} анонимного пользователя должен вернуть статус-код 401."
+        f"DELETE-запрос к {url} анонимного пользователя должен вернуть"
+        " статус-код 401."
     )
 
 
@@ -27,11 +30,14 @@ def test_update_project_non_superuser(test_client, update_testing_data):
         json=update_testing_data,
     )
     assert response.status_code == 401, (
-        f"PATCH-запрос к {url} анонимного пользователя должен вернуть статус-код 401."
+        f"PATCH-запрос к {url} анонимного пользователя должен вернуть"
+        " статус-код 401."
     )
 
 
-def test_create_project_with_regular_user(user_client, correct_create_testing_data):
+def test_create_project_with_regular_user(
+    user_client, correct_create_testing_data
+):
     response = user_client.post(URL, json=correct_create_testing_data)
     assert response.status_code == 403, (
         f"POST-запрос обычного пользователя без root-прав к {URL} должен"
