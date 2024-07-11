@@ -32,16 +32,14 @@ regular_user = User(
 def superuser_client():
     main_app.dependency_overrides[db_manager.get_session] = override_db
     main_app.dependency_overrides[current_superuser] = lambda: superuser
-    with TestClient(main_app) as client:
-        yield client
+    return TestClient(main_app)
 
 
 @pytest.fixture
 def test_client():
     main_app.dependency_overrides[db_manager.get_session] = override_db
     main_app.dependency_overrides[current_user] = lambda: not_auth_user
-    with TestClient(main_app) as client:
-        yield client
+    return TestClient(main_app)
 
 
 @pytest.fixture
@@ -54,5 +52,4 @@ def user_client():
     main_app.dependency_overrides[current_superuser] = (
         lambda: raise_forbidden()
     )
-    with TestClient(main_app) as client:
-        yield client
+    return TestClient(main_app)
