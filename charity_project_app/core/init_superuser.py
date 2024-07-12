@@ -1,4 +1,5 @@
 import contextlib
+from datetime import datetime
 
 from fastapi_users.exceptions import UserAlreadyExists
 from pydantic import EmailStr
@@ -17,6 +18,9 @@ get_user_manager_context = contextlib.asynccontextmanager(get_user_manager)
 
 async def crate_user(
     email: EmailStr,
+    first_name: str,
+    last_name: str,
+    birthday: datetime.date,
     password: str,
     is_superuser: bool = False,
 ) -> None:
@@ -29,6 +33,9 @@ async def crate_user(
                             email=email,
                             password=password,
                             is_superuser=is_superuser,
+                            first_name=first_name,
+                            last_name=last_name,
+                            birthday=birthday,
                         )
                     )
     except UserAlreadyExists:
@@ -36,12 +43,12 @@ async def crate_user(
 
 
 async def create_first_superuser() -> None:
-    if (
-        settings.user.superuser_login is not None
-        and settings.user.superuser_password is not None
-    ):
+    if settings.user.init_root:
         await crate_user(
-            email=settings.user.superuser_login,
-            password=settings.user.superuser_password,
+            email=settings.user.root.login,
+            password=settings.user.root.password,
             is_superuser=True,
+            first_name=settings.user.root.first_name,
+            last_name=settings.user.root.last_name,
+            birthday=settings.user.root.birthday,
         )

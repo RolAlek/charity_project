@@ -6,11 +6,19 @@ class DatabaseSettings(BaseModel):
     url: PostgresDsn
 
 
+class RootData(BaseModel):
+    login: EmailStr
+    password: str
+    first_name: str
+    last_name: str
+    birthday: str
+
+
 class UserSettings(BaseModel):
     secret: str
     lifetime: int = 3600
-    superuser_login: EmailStr | None = None
-    superuser_password: str | None = None
+    init_root: bool = False
+    root: RootData
 
 
 class Settings(BaseSettings):
