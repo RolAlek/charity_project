@@ -4,7 +4,8 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from charity_project_app.api.validators import (
-    check_project_exists,
+    check_project_before_delete,
+    check_project_before_update,
     validate_unique_project_name,
 )
 from charity_project_app.core import db_manager
@@ -68,11 +69,12 @@ async def update_project(
     project_in: UpdateProject,
     session: AsyncSession = Depends(db_manager.get_session),
 ):
-    if project_in.name is not None:
-        await validate_unique_project_name(project_in.name, session)
-
     return await project_crud.update_project(
-        await check_project_exists(project_id, session),
+        await check_project_before_update(
+            project_id,
+            session,
+            **project_in.model_dump(exclude_unset=True),
+        ),
         project_in,
         session,
     )
@@ -88,6 +90,6 @@ async def remove_project(
     session: AsyncSession = Depends(db_manager.get_session),
 ):
     await project_crud.delete_project(
-        await check_project_exists(project_id, session),
+        await check_project_before_delete(project_id, session),
         session,
     )
