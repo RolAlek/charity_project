@@ -40,6 +40,45 @@ async def charity_project_second(freezer):
 
 
 @pytest.fixture
+async def charity_project_with_invested_amount(freezer):
+    freezer.move_to("2023-01-01")
+    async with TestingSessionLocal() as session:
+        await session.execute(
+            insert(Project).values(
+                id=3,
+                name="Test Charity Project number 3",
+                description=(
+                    "This is a test charity project number 3 to testing"
+                    " full_amount with invested_amount"
+                ),
+                full_amount=1000,
+                invested_amount=600,
+                created_date=datetime.now(),
+            ),
+        )
+        await session.commit()
+
+
+@pytest.fixture
+async def closed_charity_project(freezer):
+    freezer.move_to("2023-01-01")
+    async with TestingSessionLocal() as session:
+        await session.execute(
+            insert(Project).values(
+                id=4,
+                name="Test Charity Project number 4",
+                description="This is a closed test charity project.",
+                full_amount=1000,
+                invested_amount=1000,
+                fully_invested=True,
+                close_date=datetime.now(),
+                created_date=datetime.now(),
+            )
+        )
+        await session.commit()
+
+
+@pytest.fixture
 def correct_create_testing_data():
     return {
         "name": "Test name",

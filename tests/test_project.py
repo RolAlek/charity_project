@@ -1,8 +1,10 @@
 import os
+from http import HTTPStatus
 
 import pytest
 
 URL = "api/projects/"
+DETAIL_URL = os.path.join(URL, "1")
 EXPECTED_KEYS = {
     "name",
     "description",
@@ -28,9 +30,10 @@ def test_create_project_with_invalid_name(superuser_client, invalid_name):
             "full_amount": 1000,
         },
     )
-    assert (
-        response.status_code == 422
-    ), "Создание проекта с пустым именем или больше 100 символов не допустимо."
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY, (
+        "Создание проекта с пустым именем или больше 100 символов не"
+        " допустимо."
+    )
 
 
 @pytest.mark.parametrize(
@@ -48,7 +51,7 @@ def test_create_project_with_non_description(non_desc, superuser_client):
         },
     )
     assert (
-        response.status_code == 422
+        response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY
     ), "Создание проекта с пустым описанием не допустимо."
 
 
@@ -67,7 +70,7 @@ def test_create_project_with_default_filling_fields(
         URL,
         json=json_data,
     )
-    assert response.status_code == 422, (
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY, (
         "При попытке передавать автозаполняемые поля при создании проекта"
         " должна возращать ошибка 422."
     )
@@ -87,7 +90,7 @@ def test_create_project_with_invalid_amount(invalid_amount, superuser_client):
             "full_amount": invalid_amount,
         },
     )
-    assert response.status_code == 422, (
+    assert response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY, (
         "Создание проекта с пустым, меньше 1 или строковым значением суммы не"
         " допустимо."
     )
@@ -99,7 +102,7 @@ def test_create_project(superuser_client, correct_create_testing_data):
         json=correct_create_testing_data,
     )
     assert (
-        response.status_code == 201
+        response.status_code == HTTPStatus.CREATED
     ), "Создание проекта с корректными данными не должно вызывать ошибок."
     data = response.json()
     missing_keys = EXPECTED_KEYS - data.keys()
@@ -126,7 +129,7 @@ def test_create_project(superuser_client, correct_create_testing_data):
 def test_get_all_projects(superuser_client):
     response = superuser_client.get(URL)
     assert (
-        response.status_code == 200
+        response.status_code == HTTPStatus.OK
     ), f"GET-запрос к {URL} должен вернуть код 200."
     data = response.json()
     [project.pop("close_date", None) for project in data]
@@ -164,12 +167,36 @@ def test_get_all_projects(superuser_client):
 )
 def test_update_project_with_non_exist_id(superuser_client, json_data):
     response = superuser_client.patch(
-        os.path.join(URL, "100"),
+        DETAIL_URL,
         json=json_data,
     )
-    assert response.status_code == 404, (
+    assert response.status_code == HTTPStatus.NOT_FOUND, (
         "Запрос с попыткой обновления проекта с несуществующим id должен"
         " возвращать ошибку со статусом 404"
+    )
+
+
+@pytest.mark.usefixtures("charity_project_with_invested_amount")
+def test_update_project_with_full_amount_less_invested(superuser_client):
+    response = superuser_client.patch(
+        os.path.join(URL, "3"),
+        json={"full_amount": 500},
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST, (
+        "Запрос с попыткой поменять необходимую сумму проекта на меньшую чем"
+        " уже внесено должен возвращать ошибку 422"
+    )
+
+
+@pytest.mark.usefixtures("closed_charity_project")
+def test_update_closed_project(superuser_client):
+    response = superuser_client.patch(
+        os.path.join(URL, "4"),
+        json={"name": "Test change name to closed project"},
+    )
+    assert response.status_code == HTTPStatus.BAD_REQUEST, (
+        "Запрос с попыткой обновления закрытого проекта должен"
+        " возвращать ошибку 422."
     )
 
 
@@ -221,20 +248,19 @@ def test_update_project(
     json_data,
     expected_data,
 ):
-    url = os.path.join(URL, "1")
-    response = superuser_client.patch(url, json=json_data)
+    response = superuser_client.patch(DETAIL_URL, json=json_data)
     assert (
         response.status_code == 200
-    ), f"Коректный PATCH-запрос к {url} должен вернуть статус-код 200"
+    ), f"Коректный PATCH-запрос к {DETAIL_URL} должен вернуть статус-код 200"
     response_data = response.json()
     missing_keys = EXPECTED_KEYS - response_data.keys()
     assert not missing_keys, (
-        f"В ответе на PATCH-запрос к {url} не хвататет следующих ключей:"
+        f"В ответе на PATCH-запрос к {DETAIL_URL} не хвататет следующих ключей:"
         f'`{"`, `".join(missing_keys)}`"'
     )
     response_data.pop("close_date", None)
     assert response_data == expected_data, (
-        f"Структура ответа на PATCH-запрос к {url} не соответствует"
+        f"Структура ответа на PATCH-запрос к {DETAIL_URL} не соответствует"
         " ожидаемому."
     )
 
