@@ -1,7 +1,6 @@
 from datetime import datetime
-from typing import Sequence
 
-from sqlalchemy import select
+from sqlalchemy import ScalarResult, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Donation, Project
@@ -10,14 +9,14 @@ from app.models import Donation, Project
 async def get_distributions_objects(
     model: Donation | Project,
     session: AsyncSession,
-) -> Sequence[Donation | Project] | None:
+) -> ScalarResult[Donation | Project]:
     model_class = Donation if isinstance(model, Project) else Project
     distributions = await session.scalars(
         select(model_class)
-        .where(model_class.close_date is None)
+        .where(model_class.close_date.is_(None))
         .order_by(model_class.created_date)
     )
-    return distributions.all()
+    return distributions
 
 
 async def make_distribution(obj: Donation | Project, session: AsyncSession):
@@ -37,17 +36,16 @@ async def make_distribution(obj: Donation | Project, session: AsyncSession):
             obj.invested_amount += necessary_funds
         else:
             distribution.invested_amount += available
+            obj.invested_amount += available
 
         distribution.fully_invested = (
             distribution.invested_amount == distribution.full_amount
         )
-
         distribution.close_date = (
             datetime.now() if distribution.fully_invested else None
         )
 
-        obj.invested_amount = obj.full_amount == obj.invested_amount
-
+        obj.fully_invested = obj.full_amount == obj.invested_amount
         obj.close_date = datetime.now() if obj.fully_invested else None
 
         session.add(distribution)

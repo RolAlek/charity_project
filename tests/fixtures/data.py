@@ -10,32 +10,34 @@ from tests.conftest import TestingSessionLocal
 async def charity_project_first(freezer):
     freezer.move_to("2023-01-01")
     async with TestingSessionLocal() as session:
-        await session.execute(
-            insert(Project).values(
-                id=1,
-                name="Test Charity Project number 1",
-                description="This is a test charity project number 1",
-                full_amount=1000,
-                created_date=datetime.now(),
-            )
+        project = Project(
+            id=1,
+            name="Test Charity Project number 1",
+            description="This is a test charity project number 1",
+            full_amount=1000,
+            created_date=datetime.now(),
         )
+        session.add(project)
         await session.commit()
+        await session.refresh(project)
+        return project
 
 
 @pytest.fixture
 async def charity_project_second(freezer):
-    freezer.move_to("2023-01-01")
+    freezer.move_to("2023-02-01")
     async with TestingSessionLocal() as session:
-        await session.execute(
-            insert(Project).values(
-                id=2,
-                name="Test Charity Project number 2",
-                description="This is a test charity project number 2",
-                full_amount=2000,
-                created_date=datetime.now(),
-            )
+        project = Project(
+            id=2,
+            name="Test Charity Project number 2",
+            description="This is a test charity project number 2",
+            full_amount=2000,
+            created_date=datetime.now(),
         )
+        session.add(project)
         await session.commit()
+        await session.refresh(project)
+        return project
 
 
 @pytest.fixture
@@ -75,6 +77,25 @@ async def closed_charity_project(freezer):
             )
         )
         await session.commit()
+
+
+@pytest.fixture
+async def charity_project_little_invested(freezer):
+    freezer.move_to("2023-01-01")
+    async with TestingSessionLocal() as session:
+        project = Project(
+            id=1,
+            name="Test Charity Project with little invested",
+            description="This is a Test Charity Project with little invested.",
+            full_amount=3000,
+            invested_amount=1000,
+            fully_invested=True,
+            created_date=datetime.now(),
+        )
+        session.add(project)
+        await session.commit()
+        await session.refresh(project)
+        return project
 
 
 @pytest.fixture
