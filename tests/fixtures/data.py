@@ -1,10 +1,9 @@
 from datetime import datetime
 
 import pytest
+from app.models import Donation, Project
 from sqlalchemy import insert
 from tests.conftest import TestingSessionLocal
-
-from charity_project_app.models import Donation, Project
 
 
 @pytest.fixture

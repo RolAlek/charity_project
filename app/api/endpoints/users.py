@@ -1,10 +1,7 @@
 from fastapi import APIRouter
 
-from charity_project_app.core.users import (
-    authentication_backend,
-    fastapi_users,
-)
-from charity_project_app.schemas import UserCreate, UserRead, UserUpdate
+from app.core.users import authentication_backend, fastapi_users
+from app.schemas import UserCreate, UserRead, UserUpdate
 
 router = APIRouter()
 

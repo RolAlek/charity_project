@@ -4,8 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from charity_project_app.crud import project_crud
-from charity_project_app.models import Project
+from app.crud import project_crud
+from app.models import Project
 
 
 async def validate_unique_project_name(

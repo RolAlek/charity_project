@@ -1,0 +1,58 @@
+from datetime import datetime
+from typing import Sequence
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.models import Donation, Project
+
+
+async def get_distributions_objects(
+    model: Donation | Project,
+    session: AsyncSession,
+) -> Sequence[Donation | Project] | None:
+    model_class = Donation if isinstance(model, Project) else Project
+    distributions = await session.scalars(
+        select(model_class)
+        .where(model_class.close_date is None)
+        .order_by(model_class.created_date)
+    )
+    return distributions.all()
+
+
+async def make_distribution(obj: Donation | Project, session: AsyncSession):
+    for_distribution = await get_distributions_objects(obj, session)
+
+    if for_distribution is None:
+        return obj
+
+    for distribution in for_distribution:
+        available = obj.full_amount - obj.invested_amount
+        necessary_funds = (
+            distribution.full_amount - distribution.invested_amount
+        )
+
+        if available > necessary_funds:
+            distribution.invested_amount += necessary_funds
+            obj.invested_amount += necessary_funds
+        else:
+            distribution.invested_amount += available
+
+        distribution.fully_invested = (
+            distribution.invested_amount == distribution.full_amount
+        )
+
+        distribution.close_date = (
+            datetime.now() if distribution.fully_invested else None
+        )
+
+        obj.invested_amount = obj.full_amount == obj.invested_amount
+
+        obj.close_date = datetime.now() if obj.fully_invested else None
+
+        session.add(distribution)
+
+    session.add(obj)
+    await session.commit()
+    await session.refresh(obj)
+    return obj

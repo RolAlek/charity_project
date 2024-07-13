@@ -15,10 +15,10 @@ from fastapi_users.authentication import (
 from fastapi_users_db_sqlalchemy import SQLAlchemyUserDatabase
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from charity_project_app.core import db_manager
-from charity_project_app.core.config import settings
-from charity_project_app.models import User
-from charity_project_app.schemas import UserCreate
+from app.core import db_manager
+from app.core.config import settings
+from app.models import User
+from app.schemas import UserCreate
 
 
 async def get_user_db(

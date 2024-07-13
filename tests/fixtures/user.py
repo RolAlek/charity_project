@@ -2,10 +2,10 @@ from fastapi import HTTPException
 from fastapi.testclient import TestClient
 import pytest
 
-from charity_project_app.core import db_manager
-from charity_project_app.core.users import current_superuser, current_user
-from charity_project_app.main import main_app
-from charity_project_app.models import User
+from app.core import db_manager
+from app.core.users import current_superuser, current_user
+from app.main import main_app
+from app.models import User
 from tests.conftest import override_db
 
 superuser = User(

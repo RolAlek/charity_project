@@ -1,16 +1,15 @@
 from pathlib import Path
 
-from httpx import AsyncClient
 import pytest
 import pytest_asyncio
+from app.core.base import Base
+from app.main import main_app
+from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
     create_async_engine,
 )
-
-from charity_project_app.core.base import Base
-from charity_project_app.main import main_app
 
 pytest_plugins = ["fixtures.data", "fixtures.user"]
 

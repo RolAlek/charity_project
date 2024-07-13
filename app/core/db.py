@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import AsyncGenerator
 
+from app.core.config import settings
 from sqlalchemy import CheckConstraint
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -13,8 +14,6 @@ from sqlalchemy.orm import (
     declared_attr,
     mapped_column,
 )
-
-from charity_project_app.core.config import settings
 
 
 class Base(DeclarativeBase):

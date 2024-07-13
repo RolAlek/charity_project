@@ -3,19 +3,16 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from charity_project_app.api.validators import (
+from app.api.invest_logic import make_distribution
+from app.api.validators import (
     check_project_before_delete,
     check_project_before_update,
     validate_unique_project_name,
 )
-from charity_project_app.core import db_manager
-from charity_project_app.core.users import current_superuser
-from charity_project_app.crud import project_crud
-from charity_project_app.schemas import (
-    CreateProject,
-    ReadProject,
-    UpdateProject,
-)
+from app.core import db_manager
+from app.core.users import current_superuser
+from app.crud import project_crud
+from app.schemas import CreateProject, ReadProject, UpdateProject
 
 router = APIRouter()
 
@@ -32,7 +29,8 @@ async def create_project(
     session: AsyncSession = Depends(db_manager.get_session),
 ):
     await validate_unique_project_name(new_project.name, session)
-    return await project_crud.create(new_project, session)
+    project = await project_crud.create(new_project, session)
+    return await make_distribution(project, session)
 
 
 @router.get(

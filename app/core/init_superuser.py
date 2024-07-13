@@ -4,10 +4,10 @@ from datetime import datetime
 from fastapi_users.exceptions import UserAlreadyExists
 from pydantic import EmailStr
 
-from charity_project_app.core import db_manager
-from charity_project_app.core.config import settings
-from charity_project_app.core.users import get_user_db, get_user_manager
-from charity_project_app.schemas import UserCreate
+from app.core import db_manager
+from app.core.config import settings
+from app.core.users import get_user_db, get_user_manager
+from app.schemas import UserCreate
 
 get_async_session_context = contextlib.asynccontextmanager(
     db_manager.get_session

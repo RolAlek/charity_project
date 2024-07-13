@@ -44,18 +44,18 @@ def test_create_donation(user_client):
 @pytest.mark.usefixtures("donation")
 def test_get_all_donations_for_admin(superuser_client):
     response = superuser_client.get(URL)
-    assert response.status_code == 200, (
-        f"GET-запрос root'a к {URL} должен вернуть 200 статус-код."
-    )
+    assert (
+        response.status_code == 200
+    ), f"GET-запрос root'a к {URL} должен вернуть 200 статус-код."
     data = response.json()
-    assert isinstance(data, list), (
-        f"GET-запрос root'a к {URL} должен вернуть список."
-    )
+    assert isinstance(
+        data, list
+    ), f"GET-запрос root'a к {URL} должен вернуть список."
     assert data[0] == {
-            "full_amount": 1000,
-            "id": 1,
-            "created_date": "2023-01-01T00:00:00",
-            "user_id": 1,
-            "invested_amount": 0,
-            "fully_invested": False,
+        "full_amount": 1000,
+        "id": 1,
+        "created_date": "2023-01-01T00:00:00",
+        "user_id": 1,
+        "invested_amount": 0,
+        "fully_invested": False,
     }

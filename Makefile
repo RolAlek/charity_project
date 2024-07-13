@@ -1,4 +1,4 @@
-WORKDIR = charity_project_app
+WORKDIR = app
 
 
 style:
