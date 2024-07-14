@@ -1,4 +1,5 @@
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Project
@@ -31,6 +32,26 @@ class ProjectCRUD(CRUDManager):
     async def delete_project(project: Project, session: AsyncSession):
         await session.delete(project)
         await session.commit()
+
+    @staticmethod
+    async def get_completed_project_by_rate(session: AsyncSession):
+        projects = await session.execute(
+            select(
+                Project.name,
+                (Project.close_date - Project.created_date).label("rate"),
+                Project.description,
+            )
+            .where(Project.fully_invested.is_(True))
+            .order_by("rate")
+        )
+        return [
+            {
+                "name": project[0],
+                "rate": str(project[1]),
+                "description": project[2],
+            }
+            for project in projects.fetchall()
+        ]
 
 
 crud_manager = ProjectCRUD(Project)

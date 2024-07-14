@@ -23,7 +23,7 @@ class ReadProject(CreateProject):
     invested_amount: int
     fully_invested: bool
     created_date: datetime
-    close_data: datetime | None = None
+    close_date: datetime
 
 
 class UpdateProject(CreateProject):
