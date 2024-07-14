@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import AsyncGenerator
 
-from app.core.config import settings
+from core.config import settings
 from sqlalchemy import CheckConstraint
 from sqlalchemy.ext.asyncio import (
     AsyncSession,

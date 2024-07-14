@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import ScalarResult, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Donation, Project
+from models import Donation, Project
 
 
 async def get_distributions_objects(

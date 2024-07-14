@@ -3,16 +3,16 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.invest_logic import make_distribution
-from app.api.validators import (
+from api.invest_logic import make_distribution
+from api.validators import (
     check_project_before_delete,
     check_project_before_update,
     validate_unique_project_name,
 )
-from app.core import db_manager
-from app.core.users import current_superuser
-from app.crud import project_crud
-from app.schemas import CreateProject, ReadProject, UpdateProject
+from core import db_manager
+from core.users import current_superuser
+from crud import project_crud
+from schemas import CreateProject, ReadProject, UpdateProject
 
 router = APIRouter()
 

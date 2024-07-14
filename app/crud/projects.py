@@ -2,8 +2,8 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import Project
-from app.schemas import UpdateProject
+from models import Project
+from schemas import UpdateProject
 
 from .base import CRUDManager
 

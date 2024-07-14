@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.invest_logic import make_distribution
-from app.core import db_manager
-from app.core.users import current_superuser, current_user
-from app.crud import donate_crud
-from app.models import User
-from app.schemas import (
+from api.invest_logic import make_distribution
+from core import db_manager
+from core.users import current_superuser, current_user
+from crud import donate_crud
+from models import User
+from schemas import (
     CreateDonation,
     ReadSuperUserDonation,
     ReadUserDonation,

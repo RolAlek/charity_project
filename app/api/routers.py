@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.endpoints import (
+from api.endpoints import (
     donate_router,
     google_router,
     projects_router,

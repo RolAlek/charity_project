@@ -2,7 +2,8 @@ from datetime import datetime
 from string import ascii_uppercase
 
 from aiogoogle import Aiogoogle
-from app.core.config import settings
+
+from core.config import settings
 
 FORMAT = "%Y/%m/%d %H:%M:%S"
 SHEET_BODY = {

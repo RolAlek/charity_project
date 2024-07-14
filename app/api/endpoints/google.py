@@ -2,11 +2,11 @@ from aiogoogle import Aiogoogle
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core import db_manager
-from app.core.google_client import get_google_client
-from app.core.users import current_superuser
-from app.crud import project_crud
-from app.services.google_api import (
+from core import db_manager
+from core.google_client import get_google_client
+from core.users import current_superuser
+from crud import project_crud
+from services.google_api import (
     create_spreadsheet,
     set_user_permissions,
     spreadsheet_update_values,

@@ -1,4 +1,4 @@
-from app.crud.base import CRUDManager
-from app.models import Donation
+from crud.base import CRUDManager
+from models import Donation
 
 crud_manager = CRUDManager(Donation)
